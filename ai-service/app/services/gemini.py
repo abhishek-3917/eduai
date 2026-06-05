@@ -27,8 +27,8 @@ def generate_response(prompt: str, system_instruction: str = None, json_mode: bo
     """
     if has_api:
         try:
-            # We use gemini-3.5-flash for speed and structured outputs
-            model_name = "gemini-3.5-flash"
+            # We use gemini-2.5-flash for speed and structured outputs
+            model_name = "gemini-2.5-flash"
             
             generation_config = {}
             if json_mode:
