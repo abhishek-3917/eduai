@@ -3,6 +3,13 @@
   command = "npm run build"
 
 [[redirects]]
+  from = "/api/*"
+  to = "https://abhishek3917-eduai-backend.hf.space/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
