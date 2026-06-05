@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: eduai_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-eduai_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_postgres_password_123}
+      POSTGRES_DB: ${DB_NAME:-eduai_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: eduai_ai_service
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eduai_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - JWT_SECRET=${JWT_SECRET:-your_super_secret_jwt_key_change_in_production}
+      - JWT_EXPIRE=${JWT_EXPIRE:-24h}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-eduai_admin}
+      - DB_PASSWORD=${DB_PASSWORD:-secure_postgres_password_123}
+      - DB_NAME=${DB_NAME:-eduai_db}
+      - AI_SERVICE_URL=http://ai-service:8000
+    depends_on:
+      db:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: eduai_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - ai-service
+
+volumes:
+  postgres_data:

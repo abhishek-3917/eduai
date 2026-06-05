@@ -1,0 +1,75 @@
+services:
+  # 1. PostgreSQL Database Instance
+  - type: database
+    name: eduai-db
+    databaseName: eduai_db
+    user: eduai_admin
+    plan: free
+
+  # 2. Python FastAPI AI Service
+  - type: web
+    name: eduai-ai-service
+    env: docker
+    dockerfilePath: Dockerfile
+    dockerContext: ai-service
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: GEMINI_API_KEY
+        sync: false # Set this in Render Dashboard after creation
+
+  # 3. Node.js Express Backend
+  - type: web
+    name: eduai-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    dockerContext: backend
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 24h
+      - key: DB_HOST
+        fromDatabase:
+          name: eduai-db
+          property: host
+      - key: DB_PORT
+        value: 5432
+      - key: DB_USER
+        fromDatabase:
+          name: eduai-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: eduai-db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: eduai-db
+          property: database
+      - key: AI_SERVICE_URL
+        fromService:
+          name: eduai-ai-service
+          type: web
+          property: host
+
+  # 4. React Frontend Static Site
+  - type: web
+    name: eduai-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    rootDirectory: frontend
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false # Set this in Render Dashboard to your backend service URL + "/api"
