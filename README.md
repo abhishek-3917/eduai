@@ -119,26 +119,30 @@ Follow these steps to host the platform on the internet fully in the cloud:
 2. Retrieve your connection string (e.g. `postgres://user:password@host/dbname?sslmode=require`).
 3. You can run migrations directly using the backend CLI after setting the `DATABASE_URL` or configuration variables in the backend.
 
-### 2. Unified Backend & AI Services (Koyeb)
-To fit fully within Koyeb's **100% Free Tier** (which provides one active container 24/7), both the Express Backend and the Python FastAPI AI service are bundled into a single production Dockerfile ([Dockerfile.prod](file:///d:/ed/Dockerfile.prod)).
+### 2. Unified Backend & AI Services (Hugging Face Spaces)
+To run fully for free without local Docker, both the Express Backend and the Python FastAPI AI service are bundled into a single production Dockerfile ([Dockerfile](file:///d:/ed/Dockerfile)) running on **Hugging Face Spaces**.
 
-1. Sign up/log in at [Koyeb](https://koyeb.com).
-2. Create a new service on Koyeb, and select your GitHub repository.
-3. Configure the service definition:
-   - **Dockerfile**: Set the Dockerfile path to `Dockerfile.prod` (located in the root of the project).
-   - **Ports**: Expose port `5000` (which serves the Express Gateway).
-   - **Environment Variables**:
-     - `PORT` = `5000`
-     - `NODE_ENV` = `production`
-     - `JWT_SECRET` = `your_super_secret_jwt_key`
-     - `GEMINI_API_KEY` = `your_gemini_api_key`
-     - `DB_HOST` = `your-neon-hostname.neon.tech`
-     - `DB_PORT` = `5432`
-     - `DB_USER` = `your_db_user`
-     - `DB_PASSWORD` = `your_db_password`
-     - `DB_NAME` = `your_db_name`
-4. Deploy the service. The Express backend will automatically communicate with the AI microservice locally on the container (latency = 0ms).
-5. Once live, note down its public URL (e.g. `https://your-service-name.koyeb.app`).
+1. Sign up/log in at [Hugging Face](https://huggingface.co).
+2. Go to **New Space** (https://huggingface.co/new-space).
+3. Set the following settings:
+   - **Space Name**: `eduai-backend` (or any custom name)
+   - **SDK**: **Docker** (Blank template)
+   - **Visibility**: Public (recommended for API access) or Private
+4. Click **Create Space**.
+5. Go to **Settings** > **Variables and Secrets** > **New Secret**:
+   - Add secret `GEMINI_API_KEY` = `your_actual_gemini_api_key`
+   - Add secret `DB_HOST` = `your-neon-hostname.neon.tech`
+   - Add secret `DB_PORT` = `5432`
+   - Add secret `DB_USER` = `your_db_user`
+   - Add secret `DB_PASSWORD` = `your_db_password`
+   - Add secret `DB_NAME` = `your_db_name`
+   - Add secret `JWT_SECRET` = `your_super_secret_jwt_key`
+   - Add secret `NODE_ENV` = `production`
+6. Push this repository to your Hugging Face Space Git remote (instructions will be shown on the Hugging Face Space page).
+7. Hugging Face will automatically build your Docker container on port `7860` and run the start daemon.
+8. Once built and running, your backend API will be available at:
+   `https://<your-username>-<space-name>.hf.space` (or via direct URL).
+
 
 
 ### 3. React Frontend Client (Netlify)

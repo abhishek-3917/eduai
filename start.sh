@@ -9,8 +9,9 @@ python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000 > /var/log/ai-servi
 echo "[+] Waiting for AI service to launch..."
 sleep 5
 
-# Start backend Express server in foreground
-echo "[+] Starting Express Backend Gateway on port 5000..."
+# Start backend Express server in foreground (Port 7860 for Hugging Face Spaces)
+echo "[+] Starting Express Backend Gateway on port 7860..."
 cd /app/backend
+export PORT=7860
 export AI_SERVICE_URL=http://127.0.0.1:8000
 npm start

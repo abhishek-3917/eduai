@@ -28,8 +28,8 @@ COPY ai-service/ /app/ai-service
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
-# Expose backend port
-EXPOSE 5000
+# Expose Hugging Face default port
+EXPOSE 7860
 
 WORKDIR /app
 CMD ["/app/start.sh"]
