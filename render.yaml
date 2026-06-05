@@ -1,11 +1,10 @@
-services:
-  # 1. PostgreSQL Database Instance
-  - type: database
-    name: eduai-db
+databases:
+  - name: eduai-db
     databaseName: eduai_db
     user: eduai_admin
     plan: free
 
+services:
   # 2. Python FastAPI AI Service
   - type: web
     name: eduai-ai-service
