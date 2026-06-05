@@ -119,32 +119,27 @@ Follow these steps to host the platform on the internet fully in the cloud:
 2. Retrieve your connection string (e.g. `postgres://user:password@host/dbname?sslmode=require`).
 3. You can run migrations directly using the backend CLI after setting the `DATABASE_URL` or configuration variables in the backend.
 
-### 2. Backend Gateway & AI Microservice (Koyeb)
+### 2. Unified Backend & AI Services (Koyeb)
+To fit fully within Koyeb's **100% Free Tier** (which provides one active container 24/7), both the Express Backend and the Python FastAPI AI service are bundled into a single production Dockerfile ([Dockerfile.prod](file:///d:/ed/Dockerfile.prod)).
+
 1. Sign up/log in at [Koyeb](https://koyeb.com).
-2. Defer building images locally: Koyeb builds directly from your GitHub repository.
-3. **Deploying the FastAPI AI service**:
-   - Create a new service on Koyeb, select your GitHub repository.
-   - Set the nested path/root directory to `ai-service`.
-   - Select **Dockerfile** as the build method.
-   - Add environment variables:
-     - `PORT` = `8000`
-     - `GEMINI_API_KEY` = `your_gemini_api_key`
-   - Deploy. Once deployed, note down its public URL (e.g. `https://your-ai-service.koyeb.app`).
-4. **Deploying the Express Backend Gateway**:
-   - Create another new service on Koyeb, select your GitHub repository.
-   - Set the nested path/root directory to `backend`.
-   - Select **Dockerfile** as the build method.
-   - Add environment variables:
+2. Create a new service on Koyeb, and select your GitHub repository.
+3. Configure the service definition:
+   - **Dockerfile**: Set the Dockerfile path to `Dockerfile.prod` (located in the root of the project).
+   - **Ports**: Expose port `5000` (which serves the Express Gateway).
+   - **Environment Variables**:
      - `PORT` = `5000`
      - `NODE_ENV` = `production`
      - `JWT_SECRET` = `your_super_secret_jwt_key`
+     - `GEMINI_API_KEY` = `your_gemini_api_key`
      - `DB_HOST` = `your-neon-hostname.neon.tech`
      - `DB_PORT` = `5432`
      - `DB_USER` = `your_db_user`
      - `DB_PASSWORD` = `your_db_password`
      - `DB_NAME` = `your_db_name`
-     - `AI_SERVICE_URL` = `https://your-ai-service.koyeb.app` (the URL from step 3)
-   - Deploy. Once deployed, note down its public URL (e.g. `https://your-backend-service.koyeb.app`).
+4. Deploy the service. The Express backend will automatically communicate with the AI microservice locally on the container (latency = 0ms).
+5. Once live, note down its public URL (e.g. `https://your-service-name.koyeb.app`).
+
 
 ### 3. React Frontend Client (Netlify)
 1. Run a build to generate static assets:
