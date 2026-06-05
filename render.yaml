@@ -63,8 +63,8 @@ services:
     name: eduai-frontend
     env: static
     buildCommand: npm install && npm run build
-    publishPath: dist
-    rootDirectory: frontend
+    staticPublishPath: dist
+    rootDir: frontend
     routes:
       - type: rewrite
         source: /*
